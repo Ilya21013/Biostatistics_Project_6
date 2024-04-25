@@ -1,0 +1,111 @@
+---
+title: "BS_HW6_GerasimovIlyaV"
+author: "Ilya V Gerasimov"
+date: "2024-04-25"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+
+```{r}
+# Total parameters
+
+alpha <- 0.05          # level of significance
+power <- 0.80          # study power
+drop_out_rate <- 0.10  # expected dropout rate
+```
+
+
+Задание 1
+
+```{r, task1}
+
+# Parameters
+sigma_m <- 0.20        # variance is 20%
+delta <- 0.10          # average difference is 10%
+epsilon <- 0.25        # clinically significant difference is 25%
+
+# Calculating z values for alpha and beta
+z_alpha <- qnorm(1 - alpha / 2)
+z_beta <- qnorm(power)
+
+# Sample size calculation for each group, without considering dropout rate
+n1_n2 <- ((z_alpha + z_beta)^2 * sigma_m^2) / (2 * (delta - epsilon)^2)
+
+# Adjusting for dropout rate
+n1_n2_adjusted <- n1_n2 / (1 - drop_out_rate)
+
+# Total sample size
+n <- 2 * n1_n2_adjusted
+
+# Output the calculated sample sizes
+cat("Размер выборки для каждой группы (n1, n2) без учета drop-out rate составляет:", ceiling(n1_n2), "\n")
+cat("Размер выборки для каждой группы (n1, n2) после корректировки с учетом drop-out rate составляет:", ceiling(n1_n2_adjusted), "\n")
+cat("Общий размер выборки n с учетом drop-out rate составляет:", ceiling(n), "\n")
+```
+
+Задание 2.
+
+```{r, task2}
+# Define the parameters for non-inferiority
+p1 <- 0.85       # response rate for the comparison drug
+p2 <- 0.65       # response rate for the test drug
+delta <- -0.1    # non-inferiority margin (negative value for a decrease)
+k <- 1           # group ratio is 1
+
+# Calculating z values for alpha and beta (power)
+z_alpha <- qnorm(1 - alpha/2)
+z_beta <- qnorm(power)
+
+# Sample size calculation for each group using the formula
+n1_n2 <- (((z_alpha + z_beta)^2) * (p1 * (1 - p1) + p2 * (1 - p2))) / (p1 - p2 - delta)^2
+
+# Adjusting for dropout rate
+n1_n2_adjusted <- n1_n2 / (1 - drop_out_rate)
+
+# Total sample size accounting for the group ratio and dropout rate
+n <- n1_n2_adjusted * (1 + k)
+
+# Output the calculated sample sizes
+cat("Размер выборки для каждой группы (n1, n2) без учета drop-out rate составляет:", ceiling(n1_n2), "\n")
+cat("Размер выборки для каждой группы (n1, n2) после корректировки с учетом drop-out rate составляет:", ceiling(n1_n2_adjusted), "\n")
+cat("Общий размер выборки n с учетом drop-out rate составляет:", ceiling(n), "\n")
+```
+
+Задание 3
+
+```{r, task3}
+# Define the parameters for the equality hypothesis
+HR <- 2          # hazard ratio of "gold standard / new therapy"
+d <- 0.8         # proportion of patients that may face the disease
+p1 <- 0.5        # therapy group ratio for the first group
+p2 <- 0.5        # therapy group ratio for the second group
+
+# Calculating z values for alpha and beta (power)
+z_alpha <- qnorm(1 - alpha / 2)
+z_beta <- qnorm(power)
+
+# Sample size calculation for each group using the formula provided
+n1_n2 <- ((z_alpha + z_beta)^2) / ((log(HR)^2) * p1 * p2 * d)
+
+# Adjusting for dropout rate
+n1_n2_adjusted <- n1_n2 / (1 - drop_out_rate)
+
+# Total sample size accounting for the group ratio and dropout rate
+n <- n1_n2_adjusted * (1 + p1/p2)
+
+# Output the calculated sample sizes
+cat("Размер выборки для каждой группы (n1, n2) без учета drop-out rate составляет:", ceiling(n1_n2), "\n")
+cat("Размер выборки для каждой группы (n1, n2) после корректировки с учетом drop-out rate составляет:", ceiling(n1_n2_adjusted), "\n")
+cat("Общий размер выборки n с учетом drop-out rate составляет:", ceiling(n), "\n")
+```
+
